@@ -9,12 +9,14 @@
             margin: 0;
             padding: 0;
             text-align: center;
-            background: linear-gradient(to top right, #ffccff, #ccffff);
+            background: linear-gradient(to top right, #ffe6f0, #ccf5ff);
             overflow: hidden;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
         }
-        h1 {
+        #message {
+            display: none;
             margin-top: 20px;
-            font-size: 2em;
+            font-size: 2.5em;
             color: #ff4081;
             text-shadow: 2px 2px #fff;
         }
@@ -48,7 +50,7 @@
         }
         @keyframes flicker {
             from {opacity: 1;}
-            to {opacity: 0.6;}
+            to {opacity: 0.5;}
         }
         #balloons {
             position: absolute;
@@ -61,11 +63,12 @@
         .balloon {
             position: absolute;
             bottom: -100px;
-            width: 50px;
-            height: 70px;
+            width: 60px;
+            height: 80px;
             background: red;
             border-radius: 50%;
-            animation: floatUp 5s linear infinite;
+            animation: floatUp 6s linear infinite;
+            opacity: 0.7;
         }
         @keyframes floatUp {
             0% { transform: translateY(0); }
@@ -74,16 +77,19 @@
     </style>
 </head>
 <body>
-    <h1>Wishing you a day as magical as you are, Sansrita!<br>May your dreams float higher than these balloons<br>and your happiness shine brighter than these candles! 🎊</h1>
     <div id="candles"></div>
     <div id="balloons"></div>
+    <h1 id="message">Wishing you a day as magical as you are, Sansrita!<br>May your dreams float higher than these balloons<br>and your happiness shine brighter than these candles! 🎊</h1>
 
-    <audio id="song" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" autoplay></audio>
+    <audio id="song" autoplay>
+        <source src="https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
 
     <script>
         const candlesContainer = document.getElementById('candles');
         const balloonsContainer = document.getElementById('balloons');
-        const song = document.getElementById('song');
+        const message = document.getElementById('message');
 
         // Generate candles
         for (let i = 0; i < 20; i++) {
@@ -103,7 +109,7 @@
 
                 setTimeout(() => {
                     balloon.remove();
-                }, 5000);
+                }, 6000);
             }
         }
         setInterval(createBalloons, 2000);
@@ -118,6 +124,8 @@
             const bufferLength = analyser.frequencyBinCount;
             const dataArray = new Uint8Array(bufferLength);
 
+            let blownOut = false;
+
             function detectBlow() {
                 analyser.getByteFrequencyData(dataArray);
                 let sum = 0;
@@ -126,15 +134,18 @@
                 }
                 const average = sum / bufferLength;
 
-                if (average > 50) {
+                if (average > 60 && !blownOut) {
+                    blownOut = true;
                     // Simulate candle blowout
                     document.querySelectorAll('.candle').forEach(candle => {
                         candle.style.background = '#555';
                         candle.style.boxShadow = 'none';
                         candle.style.transition = 'background 1s';
-                        candle.style.setProperty('--flame', 'none');
                     });
                     createBalloons();
+                    setTimeout(() => {
+                        message.style.display = 'block';
+                    }, 2000);
                 }
                 requestAnimationFrame(detectBlow);
             }
