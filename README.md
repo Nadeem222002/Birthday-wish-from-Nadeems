@@ -6,138 +6,142 @@
     <title>Happy Birthday Sansrita!</title>
     <style>
         body {
-            text-align: center;
-            background: url('your-image-url-here') no-repeat center center fixed;
-            background-size: cover;
-            color: #fff;
-            font-family: 'Comic Sans MS', cursive;
             margin: 0;
             padding: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            text-align: center;
+            background: linear-gradient(to top right, #ffccff, #ccffff);
             overflow: hidden;
         }
         h1 {
+            margin-top: 20px;
+            font-size: 2em;
+            color: #ff4081;
+            text-shadow: 2px 2px #fff;
+        }
+        #candles {
             margin-top: 50px;
-            color: #fff;
-            text-shadow: 2px 2px #000;
-            font-size: 3em;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .candle {
+            width: 20px;
+            height: 100px;
+            background: orange;
+            border-radius: 5px;
             position: relative;
-            z-index: 2;
+            cursor: pointer;
+        }
+        .candle::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 10px;
+            height: 20px;
+            background: yellow;
+            border-radius: 50%;
+            box-shadow: 0 0 15px 5px yellow;
+            animation: flicker 1s infinite alternate;
+        }
+        @keyframes flicker {
+            from {opacity: 1;}
+            to {opacity: 0.6;}
+        }
+        #balloons {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
         }
         .balloon {
             position: absolute;
             bottom: -100px;
             width: 50px;
             height: 70px;
-            border-radius: 50% 50% 60% 60%;
-            animation: floatBalloon 5s linear infinite;
-        }
-        @keyframes floatBalloon {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-110vh); opacity: 0; }
-        }
-        .candle {
-            position: absolute;
-            bottom: 30px;
-            width: 20px;
-            height: 60px;
-            background-color: #fff;
-            border: 2px solid #000;
-            border-radius: 5px;
-            z-index: 1;
-        }
-        .flame {
-            position: absolute;
-            top: -20px;
-            left: 5px;
-            width: 10px;
-            height: 20px;
-            background: radial-gradient(circle, #ffcc00, #ff6600);
+            background: red;
             border-radius: 50%;
-            animation: flicker 0.5s infinite;
+            animation: floatUp 5s linear infinite;
         }
-        @keyframes flicker {
-            0%, 100% { transform: scaleY(1); opacity: 1; }
-            50% { transform: scaleY(1.3); opacity: 0.7; }
-        }
-        #message {
-            position: absolute;
-            top: 35%;
-            width: 100%;
-            font-size: 2em;
-            color: #fff;
-            text-shadow: 2px 2px #000;
-            display: none;
-            z-index: 3;
+        @keyframes floatUp {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-110vh); }
         }
     </style>
 </head>
 <body>
-    <h1>🎂 Happy Birthday, Sansrita! 🎉</h1>
-    <div class="candle">
-        <div class="flame"></div>
-    </div>
-    <p id="blowMsg">Take a deep breath and blow out the candle to unlock your birthday magic! 🎤</p>
+    <h1>Wishing you a day as magical as you are, Sansrita!<br>May your dreams float higher than these balloons<br>and your happiness shine brighter than these candles! 🎊</h1>
+    <div id="candles"></div>
+    <div id="balloons"></div>
 
-    <audio id="birthdaySong" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3" preload="auto"></audio>
+    <audio id="song" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" autoplay></audio>
 
     <script>
+        const candlesContainer = document.getElementById('candles');
+        const balloonsContainer = document.getElementById('balloons');
+        const song = document.getElementById('song');
+
+        // Generate candles
+        for (let i = 0; i < 20; i++) {
+            const candle = document.createElement('div');
+            candle.className = 'candle';
+            candlesContainer.appendChild(candle);
+        }
+
+        // Generate balloons
         function createBalloons() {
-            const colors = ['#FF4D4D', '#FF66B2', '#66CCFF', '#99FF99', '#FFD700'];
-            setInterval(() => {
+            for (let i = 0; i < 30; i++) {
                 const balloon = document.createElement('div');
-                balloon.classList.add('balloon');
-                balloon.style.left = Math.random() * 100 + 'vw';
-                balloon.style.background = `radial-gradient(circle at 30% 30%, ${colors[Math.floor(Math.random() * colors.length)]}, #000000)`;
-                balloon.style.animationDuration = (Math.random() * 3 + 5) + 's';
-                document.body.appendChild(balloon);
-                setTimeout(() => balloon.remove(), 10000);
-            }, 300);
+                balloon.className = 'balloon';
+                balloon.style.left = `${Math.random() * 100}vw`;
+                balloon.style.background = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                balloonsContainer.appendChild(balloon);
+
+                setTimeout(() => {
+                    balloon.remove();
+                }, 5000);
+            }
         }
+        setInterval(createBalloons, 2000);
 
-        function listenForBlow() {
-            navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const source = audioContext.createMediaStreamSource(stream);
-                const analyser = audioContext.createAnalyser();
-                source.connect(analyser);
-                analyser.fftSize = 256;
+        // Request microphone access
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+            const audioContext = new AudioContext();
+            const source = audioContext.createMediaStreamSource(stream);
+            const analyser = audioContext.createAnalyser();
+            source.connect(analyser);
+            analyser.fftSize = 256;
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
 
-                const bufferLength = analyser.frequencyBinCount;
-                const dataArray = new Uint8Array(bufferLength);
-
-                function detectBlow() {
-                    analyser.getByteFrequencyData(dataArray);
-                    let sum = dataArray.reduce((a, b) => a + b, 0);
-
-                    if (sum > 5000) {
-                        blowOutCandle();
-                    } else {
-                        requestAnimationFrame(detectBlow);
-                    }
+            function detectBlow() {
+                analyser.getByteFrequencyData(dataArray);
+                let sum = 0;
+                for (let i = 0; i < bufferLength; i++) {
+                    sum += dataArray[i];
                 }
-                detectBlow();
-            }).catch(function (err) {
-                alert('Microphone access is required to blow out the candle!');
-            });
-        }
+                const average = sum / bufferLength;
 
-        function blowOutCandle() {
-            document.querySelector('.flame').style.display = 'none';
-            document.getElementById('blowMsg').innerText = '✨ Poof! The candle is out... and your magical birthday surprise begins! 🎉';
-            document.getElementById('birthdaySong').play();
-
-            setTimeout(() => {
-                alert('🎈 Happy Birthday, Sansrita! 🎂 Wishing you a day as magical as you are! May your dreams float higher than these balloons and your happiness shine brighter than these candles! 🎊');
-            }, 2000);
-        }
-
-        createBalloons();
-        listenForBlow();
+                if (average > 50) {
+                    // Simulate candle blowout
+                    document.querySelectorAll('.candle').forEach(candle => {
+                        candle.style.background = '#555';
+                        candle.style.boxShadow = 'none';
+                        candle.style.transition = 'background 1s';
+                        candle.style.setProperty('--flame', 'none');
+                    });
+                    createBalloons();
+                }
+                requestAnimationFrame(detectBlow);
+            }
+            detectBlow();
+        }).catch(error => {
+            alert('Microphone permission is required to blow out the candles!');
+        });
     </script>
 </body>
 </html>
