@@ -16,16 +16,19 @@
         #message {
             display: none;
             margin-top: 20px;
-            font-size: 2.5em;
+            font-size: 3em;
             color: #ff4081;
-            text-shadow: 2px 2px #fff;
+            text-shadow: 3px 3px 5px #000;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            border-radius: 15px;
         }
         #candles {
             margin-top: 50px;
             display: flex;
             justify-content: center;
             gap: 20px;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
         }
         .candle {
             width: 20px;
@@ -67,12 +70,19 @@
             height: 80px;
             background: red;
             border-radius: 50%;
-            animation: floatUp 6s linear infinite;
+            animation: floatUp 4s ease-in-out infinite;
             opacity: 0.7;
+            transform: translateX(0);
+            animation: floatUp 6s ease-in-out infinite, sway 2s ease-in-out infinite;
         }
         @keyframes floatUp {
             0% { transform: translateY(0); }
             100% { transform: translateY(-110vh); }
+        }
+        @keyframes sway {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(20px); }
+            100% { transform: translateX(0); }
         }
     </style>
 </head>
@@ -82,7 +92,7 @@
     <h1 id="message">Wishing you a day as magical as you are, Sansrita!<br>May your dreams float higher than these balloons<br>and your happiness shine brighter than these candles! 🎊</h1>
 
     <audio id="song" autoplay>
-        <source src="https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3" type="audio/mpeg">
+        <source src="https://drive.google.com/uc?id=1cft6GsrpnyIqnryTmmdbHta7AHG93NnI" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
 
@@ -92,15 +102,15 @@
         const message = document.getElementById('message');
 
         // Generate candles
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < 10; i++) {
             const candle = document.createElement('div');
             candle.className = 'candle';
             candlesContainer.appendChild(candle);
         }
 
-        // Generate balloons
+        // Generate interactive balloons
         function createBalloons() {
-            for (let i = 0; i < 30; i++) {
+            for (let i = 0; i < 20; i++) {
                 const balloon = document.createElement('div');
                 balloon.className = 'balloon';
                 balloon.style.left = `${Math.random() * 100}vw`;
@@ -112,7 +122,7 @@
                 }, 6000);
             }
         }
-        setInterval(createBalloons, 2000);
+        setInterval(createBalloons, 1500);
 
         // Request microphone access
         navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
